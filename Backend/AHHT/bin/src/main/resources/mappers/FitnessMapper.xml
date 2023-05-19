@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ahht.project.model.dao.ArticleDao">
+	
+	
+	 <insert id="insert" parameterType="Fitness">
+	 	insert into `Fitness`(`part`, `content`, `time`, `strength`, `cal`,`userId`)
+		values(#{part}, #{content}, #{time}, #{strength}, #{cal},#{userId});
+	 </insert>
+	 
+	 <update id="update" parameterType="Fitness">
+	 	update `Fitness`
+	 	set 
+	 	`part`=#{part}, 
+	 	`content`=#{content}, 
+	 	`time`=#{time},
+	 	`strength`=#{strength}, 
+	 	`cal`=#{cal},
+	 	WHERE `id`=#{id};
+	 </update>
+	 
+	  <select id="selectByUser" parameterType="int" resultType="Fitness">
+	 	SELECT * FROM `Fitness` WHERE `userId`=#{userId};
+	 </select>
+	 
+	 <select id="selectAll" resultType="Fitness">
+	 	SELECT * FROM `Fitness` ;
+	 </select>
+	 
+	  <select id="select" resultType="Fitness" parameterType="int">
+	 	SELECT * FROM `Fitness` where `id`=#{id} ;
+	 </select>
+	 
+	 <delete id="delete" parameterType="int" >
+	 	DELETE FROM `Fitness` 
+	 	where `id`=#{id};
+	 </delete>
+	 
+	 
+</mapper>

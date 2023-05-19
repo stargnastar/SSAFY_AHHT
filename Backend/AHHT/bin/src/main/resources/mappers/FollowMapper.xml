@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ahht.project.model.dao.ArticleDao">
+	
+	
+	 <insert id="insert" parameterType="Follow">
+	 	insert into `Follow`(`follower`,`followed`)
+		values(#{follower},#{followed});
+	 </insert>
+	 
+	 <update id="update" parameterType="Follow">
+	 	update `Follow`
+	 	set 
+	 	`follower`=#{follower}, 
+	 	`followed`=#{followed}, 
+	 	WHERE `id`=#{id};
+	 </update>
+	 
+	  <select id="selectByFollower" parameterType="int" resultType="Follow">
+	 	SELECT * FROM `Follow` WHERE `follower`=#{follower};
+	 </select>
+	 	  <select id="selectByFollowed" parameterType="int" resultType="Follow">
+	 	SELECT * FROM `Follow` WHERE `follower`=#{followed};
+	 </select>
+	 
+	 <select id="selectAll" resultType="Follow">
+	 	SELECT * FROM `Follow` ;
+	 </select>
+	 
+	  <select id="select" resultType="Follow" parameterType="int">
+	 	SELECT * FROM `Follow` where `id`=#{id} ;
+	 </select>
+	 
+	 <delete id="delete" parameterType="int" >
+	 	DELETE FROM `Follow` 
+	 	where `id`=#{id};
+	 </delete>
+	 
+	 
+</mapper>

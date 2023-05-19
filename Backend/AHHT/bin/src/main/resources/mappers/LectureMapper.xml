@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ahht.project.model.dao.ArticleDao">
+	
+	
+	 <insert id="insert" parameterType="Lecture">
+	 	INSERT INTO `lecture`(`userId`, `major`, `bio`)
+		values(#{userId}, #{major}, #{bio});
+	 </insert>
+	 
+	 <update id="update" parameterType="Lecture">
+	 	update `Lecture`
+	 	set 
+	 	`majort`=#{bio}, 
+	 	`major`=#{major}, 
+	 	`
+	 	WHERE `id`=#{id};
+	 </update>
+	 
+	  <select id="selectBySearchcondition" parameterType="SearchCondition" resultType="Lecture">
+	 	SELECT * FROM `Lecture`
+	 	
+		<if test="key!='none'">
+			where #{key}=#{word}
+		</if>
+		<if test="orderBy!='none'">
+			order by #{orderBy}=#{orderDir}
+		</if>
+		
+	</select>
+	 </select>
+	 
+
+	 
+	  <select id="select" resultType="Lecture" parameterType="int">
+	 	SELECT * FROM `Lecture` where `id`=#{id} ;
+	 </select>
+	 
+	 <delete id="delete" parameterType="int" >
+	 	DELETE FROM `Lecture` 
+	 	where `id`=#{id};
+	 </delete>
+	 
+	 
+</mapper>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ahht.project.model.dao.ArticleDao">
+	
+	
+	 <insert id="insert" parameterType="Diet">
+	 	insert into `Diet`(`photo`,`content`,`rate`,`when`,`cal`,`regDate`,`userId`)
+		values(#{photo},#{content},#{rate},#{when},#{cal},#{regDate},#{userId});
+	 </insert>
+	 <update id="update" parameterType="Diet">
+	 	update `Diet`
+	 	set 
+	 	`photo`=#{photo},
+	 	`content`=#{content},
+	 	`rate`=#{rate},
+	 	`when`=#{when},
+	 	`cal`=#{cal},
+	 	`userId`=#{userId},
+	 	WHERE `id`=#{id};
+	 </update>
+	 
+	  <select id="selectByCondition" parameterType="SearchCondition" resultType="Diet">
+	 	SELECT * FROM `Diet` 
+	 	<if test="key!='none'">
+			where #{key}=#{word}
+		</if>
+		<if test="orderBy!='none'">
+			order by #{orderBy}=#{orderDir}
+		</if>
+	 </select>
+	 
+	 <select id="selectAll" resultType="Diet">
+	 	SELECT * FROM `Diet` ;
+	 </select>
+	  <select id="select" resultType="Diet" parameterType="int">
+	 	SELECT * FROM `Diet` where `id`=#{id} ;
+	 </select>
+	 
+	 <delete id="delete" parameterType="int" >
+	 	DELETE FROM `Diet` 
+	 	where `id`=#{id};
+	 </delete>
+	 
+	 
+</mapper>
