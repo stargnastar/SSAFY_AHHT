@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,23 +47,20 @@ public class BoardController {
 	@Autowired
 	private UserService userService;
 
-	
 	//////////////////////////////////////////////////////////////////
-	///GET
+	/// GET
 	//////////////////////////////////////////////////////////////////
 	@GetMapping("/gather")
 	@ApiOperation(value = "모든 객체들을 반환한다", response = Article.class)
 	public ResponseEntity<?> selectArticleByCondidionWithPaginf(@ModelAttribute SearchCondition searchCondition) {
 
 		Map<String, Object> list = articleServie.getArticleByConditionWithPaging(searchCondition);
-		
-		
+
 		if (list.isEmpty())
 			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
 		return new ResponseEntity<Map<String, Object>>(list, HttpStatus.OK);
 	}
 
-	
 	@GetMapping("/gather/{boardName}")
 	@ApiOperation(value = "{boardName}게시차판에 해당하는 객체들을 반환한다", response = Article.class)
 	public ResponseEntity<?> getArticleByBoard(@PathVariable String name) {
@@ -79,38 +77,38 @@ public class BoardController {
 		return new ResponseEntity<Map<String, Object>>(articleList, HttpStatus.OK);
 
 	}
-	
+
 	@GetMapping("/gather/{boardName}/{id}")
 	@ApiOperation(value = "{boardName}게시차판의 {id}에 해당하는 객체를 반환한다", response = Article.class)
 	public ResponseEntity<?> getArticles(HttpSession session, @PathVariable int id) {
-	
-		Article a=articleServie.getArticleById(id);
 
-		if (a==null)
+		Article a = articleServie.getArticleById(id);
+
+		if (a == null)
 			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
 		return new ResponseEntity<Article>(a, HttpStatus.OK);
 
 	}
-	
 
-	
 	//////////////////////////////////////////////////////////////////
-	//Post
+	// Post
 	//////////////////////////////////////////////////////////////////
-	
+
 	@PostMapping("/gather/{boardName}")
-	@ApiOperation(value = "{boardName}게시판에 객체를 등록한다", response = Article.class)
-	public ResponseEntity<?> getArticle(HttpSession session, @RequestParam Article article, @PathVariable String boardName, @RequestPart(required = false)MultipartFile file) {
-		//로그인 한 사용자의 정보를 받아와 article에 set
-		User user=(User)session.getAttribute("loginUser");
+	@ApiOperation(value = "{boardName}게시판에 객체를 등록한다")
+	public ResponseEntity<?> addArticle(HttpSession session, @RequestParam Article article,
+			@PathVariable String boardName, @RequestPart(required = false) MultipartFile file) {
+		// 로그인 한 사용자의 정보를 받아와 article에 set
+		User user = (User) session.getAttribute("loginUser");
 		article.setWriterId(user.getId());
-		
-		//게시판 정보 확인
-		Board b=boardServie.getBoardIdByName(boardName);
-		if(b==null) return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+
+		// 게시판 정보 확인
+		Board b = boardServie.getBoardIdByName(boardName);
+		if (b == null)
+			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
 		article.setBoardId(b.getId());
-		
-		int a=0;
+
+		int a = 0;
 		try {
 			a = articleServie.writeArticle(article, file);
 		} catch (IOException e) {
@@ -118,24 +116,65 @@ public class BoardController {
 			e.printStackTrace();
 		}
 
-		if (a==0)
+		if (a == 0)
 			return new ResponseEntity<Void>(HttpStatus.NON_AUTHORITATIVE_INFORMATION);
-		return new ResponseEntity<Void>( HttpStatus.OK);
+		return new ResponseEntity<Void>(HttpStatus.OK);
 
 	}
-	
-	@PutMapping("/{boardName}/{id}")
-	@ApiOperation(value = "{boardName}게시차판의 {id}에 해당하는 객체를 반환한다", response = Article.class)
-	public ResponseEntity<?> getArticle(@PathVariable int id) {
 
-		Article a=articleServie.getArticleById(id);
+	//////////////////////////////////////////////////////////////////
+	// Put
+	//////////////////////////////////////////////////////////////////
 
-		if (a==null)
+	@PutMapping("/gather/{boardName}")
+	@ApiOperation(value = "{boardName}게시판의 게시글을 수정한다")
+	public ResponseEntity<?> modifyArticle(HttpSession session, Article article,
+			@RequestPart(required = false) MultipartFile file) {
+
+		// 로그인 한 사용자의 정보를 받아와 article에 set
+		User user = (User) session.getAttribute("loginUser");
+
+		// 게시글의 작성자와 동일한지 확인
+		if (article.getWriterId() != user.getId()) {
+			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+		}
+
+		int a = 0;
+		try {
+			a = articleServie.modifyAritlce(article, file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if (a == 0)
 			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
-		return new ResponseEntity<Article>(a, HttpStatus.OK);
+		return new ResponseEntity<Void>(HttpStatus.OK);
 
 	}
-	
 
+	//////////////////////////////////////////////////////////////////
+	//Delete
+	//////////////////////////////////////////////////////////////////
+
+	@DeleteMapping("/gather/{boardName}")
+	@ApiOperation(value = "{boardName}게시판의 게시글을 삭제한다")
+	public ResponseEntity<?> getArticle(HttpSession session, int id) {
+
+		//로그인 한 사용자의 정보를 받아와 article에 set
+		User user = (User) session.getAttribute("loginUser");
+		Article article=articleServie.getArticleById(id);
+		
+		//게시글의 작성자와 동일한지 확인
+		if (article.getWriterId() != user.getId()) {
+			return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+		}
+
+		int a = articleServie.removeArticle(id);
+
+		if (a == 0)
+			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+		return new ResponseEntity<Void>(HttpStatus.OK);
+
+	}
 
 }
