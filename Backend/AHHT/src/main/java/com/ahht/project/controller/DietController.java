@@ -8,6 +8,6 @@ public class DietController {
 	@Autowired
 	private DietService dietService;
 	@Autowired
-	private UserService userService;
+	private UserController userService;
 
 }

@@ -1,8 +1,10 @@
 package com.ahht.project.controller;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +15,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ahht.project.model.dto.Article;
 import com.ahht.project.model.dto.Board;
@@ -24,6 +29,7 @@ import com.ahht.project.model.dto.SearchCondition;
 import com.ahht.project.model.dto.User;
 import com.ahht.project.model.service.ArticleServie;
 import com.ahht.project.model.service.BoardServie;
+import com.ahht.project.model.service.UserService;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -45,12 +51,15 @@ public class BoardController {
 	///GET
 	//////////////////////////////////////////////////////////////////
 	@GetMapping("/gather")
-	@ApiOperation(value = "쿼리 스트링에 해당하는 객체들을 반환한다", response = Article.class)
+	@ApiOperation(value = "모든 객체들을 반환한다", response = Article.class)
 	public ResponseEntity<?> selectArticleByCondidionWithPaginf(@ModelAttribute SearchCondition searchCondition) {
-		List<Article> list = articleServie.selectByPage(1, 8);
+
+		Map<String, Object> list = articleServie.getArticleByConditionWithPaging(searchCondition);
+		
+		
 		if (list.isEmpty())
 			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
-		return new ResponseEntity<List<Article>>(list, HttpStatus.OK);
+		return new ResponseEntity<Map<String, Object>>(list, HttpStatus.OK);
 	}
 
 	
@@ -63,11 +72,11 @@ public class BoardController {
 		searchCondition.setLimit(true);
 		searchCondition.setCurrentPage(1);
 
-		List<Article> articleList = articleServie.getArticleByConditionWithPaging(searchCondition);
+		Map<String, Object> articleList = articleServie.getArticleByConditionWithPaging(searchCondition);
 
 		if (articleList.isEmpty())
 			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
-		return new ResponseEntity<List<Article>>(articleList, HttpStatus.OK);
+		return new ResponseEntity<Map<String, Object>>(articleList, HttpStatus.OK);
 
 	}
 	
@@ -83,18 +92,31 @@ public class BoardController {
 
 	}
 	
+
+	
 	//////////////////////////////////////////////////////////////////
 	//Post
 	//////////////////////////////////////////////////////////////////
 	
-	@PostMapping("/gather/{boardName}/{id}")
-	@ApiOperation(value = "{boardName}게시차판의 {id}에 해당하는 객체를 등록한다", response = Article.class)
-	public ResponseEntity<?> getArticle(HttpSession session, @RequestParam Article article) {
+	@PostMapping("/gather/{boardName}")
+	@ApiOperation(value = "{boardName}게시판에 객체를 등록한다", response = Article.class)
+	public ResponseEntity<?> getArticle(HttpSession session, @RequestParam Article article, @PathVariable String boardName, @RequestPart(required = false)MultipartFile file) {
 		//로그인 한 사용자의 정보를 받아와 article에 set
 		User user=(User)session.getAttribute("loginUser");
 		article.setWriterId(user.getId());
-		article.se
-		int a=articleServie.writeArticle(article);
+		
+		//게시판 정보 확인
+		Board b=boardServie.getBoardIdByName(boardName);
+		if(b==null) return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+		article.setBoardId(b.getId());
+		
+		int a=0;
+		try {
+			a = articleServie.writeArticle(article, file);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		if (a==0)
 			return new ResponseEntity<Void>(HttpStatus.NON_AUTHORITATIVE_INFORMATION);
@@ -102,7 +124,7 @@ public class BoardController {
 
 	}
 	
-	@GetMapping("/{boardName}/{id}")
+	@PutMapping("/{boardName}/{id}")
 	@ApiOperation(value = "{boardName}게시차판의 {id}에 해당하는 객체를 반환한다", response = Article.class)
 	public ResponseEntity<?> getArticle(@PathVariable int id) {
 
@@ -113,5 +135,7 @@ public class BoardController {
 		return new ResponseEntity<Article>(a, HttpStatus.OK);
 
 	}
+	
+
 
 }

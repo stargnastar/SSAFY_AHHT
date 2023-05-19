@@ -12,7 +12,6 @@ public interface ArticleDao {
 	
 	List<Article> selectAll();
 	Article select(int id);
-	List<Article> getArticleByConditionWithPaging(SearchCondition searchCondition);
 	
 	int insert(Article article);
 	
@@ -20,8 +19,8 @@ public interface ArticleDao {
 	
 	int delete(int id);
 	
+	List<Article> selectByCondition(SearchCondition con);
 	int getTotalArticleBySearchCondition(SearchCondition searchCondition);
 
 	
-	List<Article> selectByPage(Map map);
 }

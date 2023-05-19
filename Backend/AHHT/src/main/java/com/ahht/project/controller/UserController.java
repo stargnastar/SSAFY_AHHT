@@ -1,5 +1,5 @@
 package com.ahht.project.controller;
 
-public class UserService {
+public class UserController {
 
 }
