@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ahht.project.model.dao.DietDao">
+
+
+	<insert id="insert" parameterType="Diet">
+		insert into
+		`Diet`(`photo`,`content`,`rate`,`when`,`cal`,`userId`,`fileName`,`fileUri`)
+		values(#{photo},#{content},#{rate},#{when},#{cal},#{userId},
+		#{fileName},#{fileUri});
+	</insert>
+	<update id="update" parameterType="Diet">
+		update `Diet`
+		set
+		`photo`=#{photo},
+		`content`=#{content},
+		`rate`=#{rate},
+		`when`=#{when},
+		`cal`=#{cal},
+		`userId`=#{userId},
+		`fileName`=#{fileName},
+		`fileUri`=#{fileUri}
+
+		WHERE `id`=#{id};
+	</update>
+
+	<select id="selectByUserId" parameterType="int" resultType="Diet">
+		SELECT * 
+		FROM `Diet`
+		where userid=#{userid};
+	</select>
+
+	<select id="selectAll" resultType="Diet">
+		SELECT * FROM `Diet` ;
+	</select>
+	
+	
+	<select id="select" resultType="Diet" parameterType="int">
+		SELECT * FROM `Diet` where `id`=#{id} ;
+	</select>
+
+	<delete id="delete" parameterType="int">
+		DELETE FROM `Diet`
+		where `id`=#{id};
+	</delete>
+
+
+</mapper>

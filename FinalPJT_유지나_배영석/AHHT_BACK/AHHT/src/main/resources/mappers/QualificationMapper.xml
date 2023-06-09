@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ahht.project.model.dao.QualificationDao">
+
+
+	<insert id="insert" parameterType="Qualification">
+		insert into `qualification`(`userId`, `content`)
+		values(#{userId},
+		#{content});
+	</insert>
+	<update id="update" parameterType="Qualification">
+		update `Qualification`
+		set
+		`content`=#{content}
+		WHERE `id`=#{id};
+	</update>
+
+	<select id="selectByUser" parameterType="int"
+		resultType="Qualification">
+		SELECT * FROM `Qualification` WHERE `userId`=#{userId};
+	</select>
+
+	<select id="selectAll" resultType="Qualification">
+		SELECT * FROM `Qualification` ;
+	</select>
+	  <select id="select" parameterType="int" resultType="Qualification">
+        SELECT * FROM `Qualification` WHERE `id`=#{id};
+    </select>
+
+	<delete id="delete" parameterType="int">
+		DELETE FROM `Qualification`
+		where `id`=#{id};
+	</delete>
+
+
+
+</mapper>

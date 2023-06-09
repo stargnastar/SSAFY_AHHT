@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ahht.project.model.dao.ArticleDao">
+
+	<select id="selectAll" resultType="Article">
+		select *
+		from article;
+	</select>
+
+	<select id="select" parameterType="int" resultType="Article">
+		select * from article where id=#{id};
+	</select>
+
+
+
+	<insert id="insert" parameterType="Article">
+		insert into `article`(`boardId`,`title`,`content`,`writerId`,`fileName`,`fileUri`)
+		values(	#{boardId},#{title},#{content}, #{writerId},#{fileName},#{fileUri});
+	</insert>
+
+
+	<update id="update" parameterType="Article">
+		update `article`
+		set `boardId`=#{boardId}, `title`=#{title}, `content`=#{content},
+		`updateDate`=current_timestamp, 
+		`fileName`=#{fileName},`fileUri`=#{fileUri}
+		WHERE id=#{id};
+	</update>
+
+	<delete id="delete" parameterType="int">
+		DELETE FROM article where id=#{id};
+	</delete>
+	
+	<select id="selectByBoardId"
+		parameterType="int" resultType="Article">
+		select * from `article`
+		where boardId=#{boardId};
+		
+	</select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</mapper>
